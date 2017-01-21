@@ -1,0 +1,20 @@
+
+create database project_market;
+use project_market;
+create table buyers(id int auto_increment, name varchar(60), surname varchar(60), email varchar(60), password varchar(60), phone varchar(60), address varchar(60), primary key(id));
+create table products(id int auto_increment not null, name varchar(60), description text, cost  int, remainder int, primary key(id));
+select * from buyers;
+select * from products;
+create table orders(id int auto_increment not null, date_registration date, closing_date date, status enum('обработка заказа', 'выполнен', 'анулирован', 'отправлен'), buyer_id int, foreign key(buyer_id) references buyers(id), primary key(id));
+select * from orders;
+create table buyer_product(buyer_id int, product_id int, foreign key(buyer_id) references buyers(id), foreign key(product_id) references products(id), primary key(buyer_id, product_id), quantity_products int);
+#drop table buyer_product;
+update orders set closing_date=null where id=4;
+select * from buyer_product;
+create table reviews(buyer_id int, product_id int, foreign key(buyer_id) references buyers(id), foreign key(product_id) references products(id), mark int not null, comment text, primary key(buyer_id, product_id));
+select * from reviews;
+select b.surname, p.name, bp.quantity_products from buyers as b join buyer_product as bp on b.id=bp.buyer_id join products as p on p.id=bp.product_id  order by bp.quantity_products desc;
+select b.surname, sum(p.cost*quantity_products) from buyers as b join buyer_product as bp on  b.id=bp.buyer_id join products as p on p.id=bp.product_id group by b.surname order by sum(cost*quantity_products) desc;
+select*from orders order by date_registration;
+select*from orders order by status, closing_date;
+select p.name, avg(r.mark) from products as p join reviews as r on p.id=r.product_id group by p.name;
